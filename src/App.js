@@ -1,24 +1,18 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Provider } from 'react-redux'; //Tudo que estiver dentro de Provider, terá acesso a Store
+import store from './store'; //Precisa ser passado como parâmetro para o Provider
+
+import Sidebar from './components/Sidebar';
+import Video from './components/Video';
 
 function App() {
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Provider store={store}>
+        <Video/>
+        <Sidebar/>
+      </Provider>
     </div>
   );
 }
