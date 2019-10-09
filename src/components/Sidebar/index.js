@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux'; //Para compartilhar o State do Redux com algum componente
-import * as CourseActions from '../../store/actions/course'
+import * as CourseActions from '../../store/actions/course' //Importando todas as actions de Course
 import { bindActionCreators } from 'redux' //Mapeia todas as actions e as tranforma em propriedades para o componente
 
+//Criando componente usando 'const'
 const Sidebar = ({ modules, toggleLesson }) => (
     <aside>
         { modules.map(module => (
@@ -23,14 +24,17 @@ const Sidebar = ({ modules, toggleLesson }) => (
     </aside>
 );
 
-const mapStateToProps = state => ({
+const mapStateToProps = state => ({ 
     modules: state.course.modules 
 })
 
-const mapDispatchToProps = dispatch => bindActionCreators(CourseActions, dispatch)
+const mapDispatchToProps = dispatch =>   ({
+    toggleLesson: (module, lesson) => dispatch(CourseActions.toggleLesson(module, lesson))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
 
+//const mapDispatchToProps = dispatch => bindActionCreators(CourseActions, dispatch)
 /* Connect recebe como primeiro parâmetro uma função, que recebe o State de Redux e deve retornar quais propriedades de State eu desejo usar em um componente, 
    no exemplo acima, o componente é Sidebar.
    

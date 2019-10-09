@@ -1,0 +1,45 @@
+-   Para criar um componente simples sem estado basta usar 'CONST' em sua declaração.
+    EXEMPLO:
+        const Sidebar = ({ modules, toggleLesson }) => (
+            <aside>
+                { modules.map(module => (
+                    <div key={module.id}>
+                        <strong onClick={() => toggleLesson(module)}>{
+                            module.title}
+                        </strong>
+                    </div>
+                ))}
+            </aside>
+        );
+
+    OBS:
+        Perceba que que Sidebar recebe dois parâmetros, modules e toggleLesson. O primeiro, modules, é enviado por mapStateToProps, 
+        uma 'CONST' que possui uma função. Já o segundo parâmetro, toggleLesson, é enviado por mapDispatchToProps, 
+        outra 'CONST' que também possui uma função.
+
+
+-   mapStateToProps
+
+    mapStateToProps é uma 'CONST' que mapeia o State da aplicação e disponibiliza como PROPS para o componente.
+    Continuemos com o exemplo acima, temos o componente Sidebar, criaremos o seu mapStateToProps.
+    EXEMPLO:
+        const mapStateToProps = state => ({ 
+            modules: state.course.modules 
+        })
+
+    A função de mapStateToProps recebe como primeiro parâmetro o state. Desta função é retornado os valores de state, 
+    que desejo usar como PROPS em meu componente, que é Sidebar. Neste caso é retornado 'state.course.modules' do State, 
+    portanto esses valores estarão disponíveis como PROPS em Sidebar, com o nome de 'modules'.
+
+
+-   mapDispatchToProps
+
+    mapDispatchToProps é uma 'CONST' que retorna uma função, tal função possui dentro de si uma chamada para o método dispatch(),
+    que irá passar alguma action disparada pelo usuário para o reducer. mapDispatchToProps serve para isolar a lógica do dispatch.
+    EXEMPLO:
+        const mapDispatchToProps = dispatch =>   ({
+            toggleLesson: (module) => dispatch(actionToggleLesson(module))
+        })
+
+    mapDispatchToProps retorna um objeto que possui uma função, 'toggleLesson', esta função passa para dispatch() uma action,
+    que no caso é actionToggleLesson(), esta por vez recebe 'module' como dado.
