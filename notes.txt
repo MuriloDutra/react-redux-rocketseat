@@ -1,10 +1,79 @@
--   Para criar um componente simples sem estado basta usar 'CONST' em sua declaração.
+-   Criando uma action
+
+    action é uma função que será chamada quando usuário fizer determinada ação, ela irá retornar . Um projeto pode ter vários arquivos de actions e
+    um arquivo de action pode ter várias action dentro de si.
+
     EXEMPLO:
-        const Sidebar = ({ modules, toggleLesson }) => (
+        export function toggleModule(module){
+            return {
+                type: 'TOGGLE_MODULE',
+                module,
+            }
+        }
+
+    A action acima dada como exemplo, recebe um parâmetro, module. O retorno dela será um objeto, possuindo o tipo da ação que o usuário
+    disparou e os dois parâmetros.
+
+
+
+-   Reducer
+
+    O reducer faz a ligação entre uma action e a Store da aplicação. O reducer é responsável por iniciar o State inicial da Store,
+    quando a aplicação se inicia pela primeira vez. Além disso, o Reducer é responsável por alterar o State da Store quando uma action acontece.
+
+    EXEMPLO:
+        const INITIAL_STATE = { 
+            course: 'Apredendo Redux',
+            activeModule: {},
+        }
+
+        export default function course(state = INITIAL_STATE, action){
+            if(action.type == 'TOGGLE_MODULE'){
+                return {
+                    ...state,                       //copiando o restante das informações de state que não desejo mudar
+                    activeModule: action.module,    //Mudando a informação de State que me interessa
+                }
+            }
+            return state
+        }
+
+    A const INITIAL_STATE é o que determinará o State inicial da Store. Perceba que o reducer 'course' recebe dois parâmetros, state e action.
+    Sempre que uma action é disparada, todos os reducers da aplicação são chamados, por isso dentro de cada reducer é necessário fazer a verificação
+    se o tipo da action é a correta.
+
+
+
+-   CombineReducers
+
+    Como dito anteriormente, uma aplicação pode ter diversos Reducers, e para todos serem enviados para a Store, é necessário criar 
+    um arquivo 'pai' e importar todos os Reducers e usar a função combineReducers() para unir todos, na hora que for criar a Store
+    da aplicação, basta passar o arquivo 'pai' como parâmetro.
+    
+    *Criando a Store
+
+    EXEMPLO:
+        import store from './store';
+        import rootReducer from './reducers'
+        const store = createStore(rootReducer)
+    
+    
+    *Como usar o combineReducers
+
+    EXEMPLO:
+    export default combineReducers({
+        course,
+        reducer02, 
+        reducer03,
+    })
+
+-   Para criar um componente simples sem estado basta usar 'CONST' em sua declaração.
+
+    EXEMPLO:
+        const Sidebar = ({ modules, toggleModule }) => (
             <aside>
                 { modules.map(module => (
                     <div key={module.id}>
-                        <strong onClick={() => toggleLesson(module)}>{
+                        <strong onClick={() => toggleModule(module)}>{
                             module.title}
                         </strong>
                     </div>
@@ -13,15 +82,17 @@
         );
 
     OBS:
-        Perceba que que Sidebar recebe dois parâmetros, modules e toggleLesson. O primeiro, modules, é enviado por mapStateToProps, 
-        uma 'CONST' que possui uma função. Já o segundo parâmetro, toggleLesson, é enviado por mapDispatchToProps, 
+        Perceba que que Sidebar recebe dois parâmetros, modules e toggleModule. O primeiro, modules, é enviado por mapStateToProps, 
+        uma 'CONST' que possui uma função. Já o segundo parâmetro, toggleModule, é enviado por mapDispatchToProps, 
         outra 'CONST' que também possui uma função.
+
 
 
 -   mapStateToProps
 
     mapStateToProps é uma 'CONST' que mapeia o State da aplicação e disponibiliza como PROPS para o componente.
     Continuemos com o exemplo acima, temos o componente Sidebar, criaremos o seu mapStateToProps.
+
     EXEMPLO:
         const mapStateToProps = state => ({ 
             modules: state.course.modules 
@@ -32,14 +103,79 @@
     portanto esses valores estarão disponíveis como PROPS em Sidebar, com o nome de 'modules'.
 
 
+
 -   mapDispatchToProps
 
     mapDispatchToProps é uma 'CONST' que retorna uma função, tal função possui dentro de si uma chamada para o método dispatch(),
     que irá passar alguma action disparada pelo usuário para o reducer. mapDispatchToProps serve para isolar a lógica do dispatch.
+    
     EXEMPLO:
         const mapDispatchToProps = dispatch =>   ({
-            toggleLesson: (module) => dispatch(actionToggleLesson(module))
+            toggleModule: (module) => dispatch(toggleModule(module))
         })
 
-    mapDispatchToProps retorna um objeto que possui uma função, 'toggleLesson', esta função passa para dispatch() uma action,
-    que no caso é actionToggleLesson(), esta por vez recebe 'module' como dado.
+    mapDispatchToProps retorna um objeto que possui uma função, 'toggleModule', esta função passa para dispatch() uma action,
+    que no caso é toggleModule(), esta por vez recebe 'module' como dado.
+
+
+
+-   connect()
+
+    Ok, agora que sabemos como fazer os métodos mapStateToProps,mapDispatchToProps e também sabemos para que ambos servem,
+    como utilizamos eles? 
+
+    Simples, usamos o método connect(), esta função é o que faz a ligação entre o State da aplicação e um componente.
+    Para poder usá-lo, faça o seguinte import:
+        import { connect } from 'react-redux';
+
+    O método connect, pode receber até quatro parâmetros, todos opcionais, focaremos nos dois primeiros.
+    O primeiro parâmetro é mapStateToProps, que criamos anteriormente, o segundo é mapDispatchToProps.
+    
+    EXEMPLO:
+        export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
+
+    Todas as propriedades definidas dentro de mapStateToProps, estarão disponíveis para o componente Sidebar através de connect(),
+    pois ele que faz essa 'ponte' entre props e componente. E todas as funções de dispatch que estiverem dentro de mapDispatchToProps estarão
+    disponíveis também para serem chamadas dentro de Sidebar.
+
+
+
+-   Provider
+
+    A tag Provider de react-redux serve para determinar quais componentes terão acesso a Store. Tudo que estiver dentro
+    de Provider, terá acesso a Store. Antes é necessário fazer o seguinte: import { Provider } from 'react-redux'.
+    O uso do Provider se dá no arquivo 'App.js'.
+    
+    EXEMPLO:
+         <div className="App">
+            <Provider store={store}>
+                <Sidebar/>
+            </Provider>
+        </div>
+
+    Ou seja, o componente Sidebar terá acesso a Store.
+
+
+
+-   bindActionCreators
+
+    O redux possui um Helper, bindActionCreators, que ajuda transformando várias Actions de um arquivo em propriedades para serem acessadas pelo componente.
+    Ele pode ser usado em mapDispatchToProps.
+
+    EXEMPLO:
+        const mapDispatchToProps = dispatch =>  bindActionCreators(CourseActions, dispatch)
+
+    Agora para acessar alguma das actions no componente, basta chamar qual deseja usar.
+    
+    EXEMPLO:
+         <button onClick={() => toggleLesson()}>
+            Selecionar
+        </button>
+
+    Supondo que tivesse outra action dentro de CourseActions, poderia fazer da mesma maneira.
+    EXEMPLO:
+        <button onClick={() => getModule(}>
+            Selecionar
+        </button>
+
+    Estou acessando todas as Actions do arquivo CourseActions como se fossem métodos de uma classe.

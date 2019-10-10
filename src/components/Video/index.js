@@ -8,7 +8,9 @@ const Video = ({activeLesson, activeModule}) => (
     </div>
 )
 
-export default connect(state => ({
+const mapStateToProps = state => ({ //Recuperando alguns dados do State
     activeLesson: state.course.activeLesson,
     activeModule: state.course.activeModule,
-}))(Video)
+})
+
+export default connect(mapStateToProps)(Video)// Fazendo a 'ligação' entre os dados de mapStateToProps e o componente

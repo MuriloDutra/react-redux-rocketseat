@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux'; //Para compartilhar o State do Redux com algum componente
 import * as CourseActions from '../../store/actions/course' //Importando todas as actions de Course
-import { bindActionCreators } from 'redux' //Mapeia todas as actions e as tranforma em propriedades para o componente
+import { bindActionCreators } from 'redux' //Mapeia todas as actions e as tranforma em propriedades para serem acessadas
 
 //Criando componente usando 'const'
 const Sidebar = ({ modules, toggleLesson }) => (
@@ -25,12 +25,10 @@ const Sidebar = ({ modules, toggleLesson }) => (
 );
 
 const mapStateToProps = state => ({ 
-    modules: state.course.modules 
+    modules: state.course.modules
 })
 
-const mapDispatchToProps = dispatch =>   ({
-    toggleLesson: (module, lesson) => dispatch(CourseActions.toggleLesson(module, lesson))
-})
+const mapDispatchToProps = dispatch =>  bindActionCreators(CourseActions, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
 

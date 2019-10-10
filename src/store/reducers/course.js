@@ -25,7 +25,7 @@ const INITIAL_STATE = {
 export default function course(state = INITIAL_STATE, action){
     if(action.type == 'TOGGLE_LESSON'){
         return {
-            ...state, //copiando o restante das informações de state que não desejo mudar
+            ...state, //copiando o restante das informações de State que não desejo mudar
             activeLesson: action.lesson, //Mudando activeLesson de State
             activeModule: action.module, //Mudando activeModule de State
         }
